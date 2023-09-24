@@ -1,0 +1,43 @@
+//Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+// Variables
+$darkpurple: #2B233D;
+$apricot: #FFA300;
+$aquagreen: #00CEAE;
+$font-stack: Montserrat, sans-serif;
+
+.p{
+  color: $darkpurple;
+  font: $font-stack;
+  padding: 1em;
+}
+
+.body {
+  color: $darkpurple;
+  font: $font-stack;
+  padding: 1em;
+}
+
+.h1{
+  color: $darkpurple;
+  font: $font-stack;
+  padding: 1em;
+
+}
+
+.my-color {
+  background-color: $darkpurple;
+  color: $apricot;
+  padding: 1em;
+}
+
+.my-link a {
+  @extend .my-color;
+  color: $aquagreen;
+
+  &:hover {
+      background-color: rgba( $apricot, .5 );
+      color: white;
+  }
+}

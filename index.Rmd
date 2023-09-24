@@ -1,0 +1,146 @@
+---
+title: Parkrun
+output:
+  html_document:
+    css: "custom.scss"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+
+```{r, include = FALSE}
+library("magrittr")
+library("gt")
+library("gtExtras")
+library("dplyr")
+library("ggplot2")
+library("lubridate")
+library("readr")
+library("stringr")
+runs = readr::read_csv("parkrun.csv",
+                       col_types = "cciiccc") %>%
+  mutate(Date = dmy(`Run Date`)) %>%
+  mutate(Time = ms(str_sub(Time, 1, 5)))
+
+
+#  mutate(age_percent = as.numeric(str_sub(`Age Grade`, 1, -2))) %>% 
+#  select(-`Run Date`) %>%
+darkpurple = "#2B233D"
+apricot = "#FFA300"
+aquagreen = "#00CEAE"
+
+```
+
+
+```{r, echo = FALSE}
+runs %>%
+  filter(Time < ms("45:00")) %>%
+  ggplot(aes(x = Time)) + 
+  geom_density(fill = darkpurple, colour = apricot, lwd = 1) + 
+  geom_vline(xintercept = ms("30:00"),
+             colour = apricot,
+             lwd = 0.5, lty = "dashed") +
+  annotate(label = "30 min",
+           geom = "label",
+           x = ms("30:00"),
+           y = 0.0035) +
+  theme_void() +
+  scale_x_time() +
+  xlab("Time") 
+```
+
+
+```{r, echo = FALSE}
+runs %>%
+  filter(Time < ms("45:00")) %>%
+  ggplot(aes(x = Date, y = Time)) + 
+  geom_point(colour = apricot) + 
+  geom_hline(yintercept = ms("30:00"),
+             colour = apricot,
+             lwd = 0.5, lty = "dashed") +
+  xlab("") + 
+  ylab("") +
+  scale_x_date() +
+  scale_y_time(breaks = ms(c("28:00", "30:00", "35:00")),
+               labels = c("28 min", "30 min", "35 min")) +
+  theme(panel.background = element_rect(fill = "transparent"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        plot.background = element_rect(fill = darkpurple,
+                                       color = darkpurple, size = 2),
+        axis.text = element_text(colour = apricot,
+                            family = "montserrat",
+                            size = 10),
+        plot.title = element_text(colour = apricot,
+                            family = "AppleGothic",
+                            size = 16),
+        plot.title.position = "plot") + 
+  ggtitle("Parkrun results")
+``` 
+
+
+```{r}
+spark = 
+  runs %>%
+  group_by(Event) %>%
+  summarise(run_data = list(Pos), .groups = "drop")
+```
+
+
+```{r, echo = FALSE, warning = FALSE}
+spark %>%
+  gt() %>%
+  tab_header(
+    title = "Parkrun Results",
+    subtitle = md("**Rhian** Davies")
+  ) %>%
+  tab_source_note(
+    source_note = md("Source: [www.parkrun.org.uk](https://www.parkrun.org.uk/results/athleteresultshistory/?athleteNumber=1895392)")
+  ) %>% 
+  gt_sparkline(run_data)
+#fmt_missing(columns = everything()) %>% 
+#gt_plt_bar_pct(column = age_percent, scaled = TRUE)
+
+```
+
+</b>
+
+<p>"Some text in a paragraph"</p>
+
+
+Some text
+La la la
+
+This is a <span class="my-color">color</span> word.
+
+</br>
+
+::: {.my-color}
+All of these words are colored.
+:::
+
+
+</br>
+
+This is a [color]{.my-color} word.
+
+</br>
+
+::: {.my-color}
+This is a link that will be [green](https://pkgs.rstudio.com/rmarkdown/).
+:::
+
+
+</br>
+
+::: {.my-link}
+This is a link that will be [cyan](https://pkgs.rstudio.com/rmarkdown/).
+:::
+
+
+Footer:
+
+Last updated on `r lubridate::today()`
